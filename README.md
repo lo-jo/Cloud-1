@@ -27,8 +27,8 @@ YAML: A popular and simple data format that is very clean and understandable by 
 
 ## Install Ansible
 ``` 
-python3 -m pip install ansible
-sudo apt-get install ansible
+pip install ansible
+export PATH=$PATH:~/.local/bin
 ```
 
 ## Config
@@ -37,3 +37,8 @@ hosts - It's an inventory file that contains pieces of information about managed
 playbook.yml - The master playbook file that contains which group of hosts that will be managed using our available roles.
 
 roles - it's a group of Ansible playbooks that will be used to provision the server. The ansible roles have their own directory structures, each role will contain directories such as tasks, handlers, vars etc.
+
+## Automation with ansible
+Both the infrastructure provisioning (creating and configuring AWS resources) and the aplication deployment (installing the services and WordPress) need to be automated.
+
+#
