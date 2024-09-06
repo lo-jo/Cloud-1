@@ -2,13 +2,14 @@
 - name: Provision AWS resources
   hosts: localhost
   gather_facts: false
+  become: true # Run tasks with root privileges
 
   tasks:
     - name: Create EC2 instance
       ec2_instance:
-        key_name: my-key-pair
+        key_name: cloudy-onesie
         image_id: ami-0c94855ba95c71c99
-        region: us-west-2
+        region: eu-west-3a
         instance_type: t2.micro
         wait: true
         count: 1
@@ -19,3 +20,72 @@
     - name: Print instance details
       debug:
         var: ec2.instances[0].public_ip_address
+
+
+---
+- name: Provision AWS resources
+  hosts: localhost
+  gather_facts: False
+  become: true # Run tasks with root privileges
+
+  tasks:
+    - name: Create AWS EC2 key pair (if it doesn't exist)
+      amazon.aws.ec2_key:
+        name: my-ec2-key
+        region: us-east-1
+        state: present
+      register: ec2_key
+
+    - name: Create security group # Create Security Group (Allow SSH and HTTP)
+      amazon.aws.ec2_group:
+        name: my-ec2-sg
+        description: Security group for EC2 instance
+        region: us-east-1
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 443
+            to_port: 443
+            cidr_ip: 0.0.0.0/0
+        state: present
+      register: ec2_sg
+
+    - name: Create EC2 instance
+      amazon.aws.ec2_instance:
+        key_name: my-ec2-key
+        region: us-east-1
+        instance_type: t2.micro
+        image_id: ami-0c02fb55956c7d316  # Ubuntu 22.04 AMI
+        wait: yes
+        security_groups: 
+          - my-ec2-sg
+        instance_tags:
+          Name: MyAppServer
+        count: 1
+      register: ec2_instance
+
+    - name: Wait for the instance to become ready
+      amazon.aws.ec2_instance_info:
+        region: us-east-1
+        filters:
+          instance-id: "{{ ec2_instance.instance_ids[0] }}"
+      register: instance_info
+      until: instance_info.instances[0].state == 'running'
+      retries: 10
+      delay: 15
+
+    - name: Add new instance to inventory
+      add_host:
+        name: "{{ instance_info.instances[0].public_ip_address }}"
+        groups: ec2
+
+    - name: Show the EC2 public IP address
+      debug:
+        msg: "EC2 instance launched. Public IP: {{ instance_info.instances[0].public_ip_address }}"
