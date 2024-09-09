@@ -28,7 +28,7 @@ YAML: A popular and simple data format that is very clean and understandable by 
 ## Install Ansible
 ``` 
 pip install ansible
-export PATH=$PATH:~/.local/bin
+export PATH=$PATH:~/.local/bin:$HOME/.local/bin
 ```
 
 ## Config
