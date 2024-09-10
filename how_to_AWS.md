@@ -33,13 +33,13 @@ For this project, we will encrypte the AWS credentials (Acces keys):
 openssl rand -base64 2048 > vault.pass
 
 # Create an ansible vault
-ansible-vault create group_vars/all/pass.yml --vault-password-file vault.pass
+ansible-vault create group_vars/all/env.yml --vault-password-file vault.pass
 ```
 
-To edit the pass.yml file:
+To edit the env.yml file:
 ```
-# Editing 'pass.yml'
-ansible-vault edit group_vars/all/pass.yml --vault-password-file vault.pass
+# Editing 'env.yml'
+ansible-vault edit group_vars/all/env.yml --vault-password-file vault.pass
 
 # In our case add the AWS credentials
 ec2_access_key: <your-access-key>
@@ -77,7 +77,7 @@ These keys pairs (consisting of a public key and a private key) is a set of secu
 chmod +x ./install_ansible.sh && . ./install_ansible.sh
 
 # Verbose mode flag -vvv
-ansible-playbook playbooks/provision_ec2.yml -i hosts.ini --vault-password-file vault.pass -vvv
+ansible-playbook playbooks/provision_ec2.yml --vault-password-file vault.pass -vvv
 
 # SSH connection Example:
 ssh -i "~/.ssh/aws_cloud1_keypair.pem" ubuntu@ec2-15-237-181-238.eu-west-3.compute.amazonaws.com

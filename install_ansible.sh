@@ -25,5 +25,3 @@ fi
 echo "Checking Ansible version:"
 ansible --version
 echo "Ansible is located at: $(which ansible)"
-
-ansible-galaxy collection install amazon.aws

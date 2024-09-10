@@ -41,4 +41,9 @@ roles - it's a group of Ansible playbooks that will be used to provision the ser
 ## Automation with ansible
 Both the infrastructure provisioning (creating and configuring AWS resources) and the aplication deployment (installing the services and WordPress) need to be automated.
 
-#
+## Commands
+
+### Create Ansible role
+```
+ansible-galaxy role init <role_name>
+```
