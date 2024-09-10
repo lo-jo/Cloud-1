@@ -73,6 +73,9 @@ These keys pairs (consisting of a public key and a private key) is a set of secu
 
 ### Run Playbook
 ```
+# Check if Ansible is installed and PATH is modified
+chmod +x ./install_ansible.sh && . ./install_ansible.sh
+
 # Verbose mode flag -vvv
 ansible-playbook playbooks/provision_ec2.yml -i hosts.ini --vault-password-file vault.pass -vvv
 
