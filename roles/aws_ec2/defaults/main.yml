@@ -2,7 +2,7 @@
 # Default values for the AWS EC2 role
 ec2_name: aws-default
 region: eu-west-3
-key_name: aws_default  # Key name for SSH
+key_name: aws_default_keypair  # Key name for SSH
 key_file_path: "~/.ssh/{{ key_name }}"  # Path to store the private key locally
 image: ami-04a92520784b93e73  # Ubuntu 24.04 LTS AMI
 instance_type: t2.micro
