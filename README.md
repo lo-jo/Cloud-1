@@ -47,3 +47,25 @@ Both the infrastructure provisioning (creating and configuring AWS resources) an
 ```
 ansible-galaxy role init <role_name>
 ```
+
+### Create Ansible vault with password file
+```
+# Create a hashed password file in the root directory
+openssl rand -base64 2048 > vault.pass
+
+# Create an ansible vault
+ansible-vault create group_vars/all/env.yml --vault-password-file vault.pass
+```
+
+### Encrypt file with ansible vault
+```
+# Example:
+ansible-vault encrypt group_vars/all/.env    
+
+```
+
+### Edit encrypted file with ansible vault
+```
+# Example:
+ansible-vault edit group_vars/all/env.yml --vault-password-file vault.pass
+```

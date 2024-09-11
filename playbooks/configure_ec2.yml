@@ -1,1 +1,67 @@
-# Playbook to configure EC2 instance
+---
+# Playbook to configure EC2 instance by SSH into EC2 instance and set up Docker and containers
+- name: Set up Docker and copy inception files in EC2
+  hosts: all
+  become: true  # Ensure tasks are run with root privileges
+  gather_facts: true  # Gather system information
+  
+  tasks:
+    - name: Update and install dependencies
+      apt:
+        update_cache: yes
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - make
+          - python3
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker APT repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable
+        state: present
+
+    - name: Install Docker and Docker Compose
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+
+    - name: Install Docker Compose (via URL)
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}"
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Create directory on remote host
+      file:
+        path: /home/ubuntu/cloud-1
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        recurse: yes
+
+    - name: Copy directory to remote host
+      copy:
+        src: ../inception/
+        dest: /home/ubuntu/cloud-1
+
+    - name: Create necessary directories for volumes
+      file:
+        path: /home/ubuntu/data/{{ item }}
+        state: directory
+        mode: '0755'
+        owner: ubuntu
+        group: ubuntu
+      with_items:
+        - mariadb
+        - wordpress
