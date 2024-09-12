@@ -1,0 +1,10 @@
+---
+# Vars for inception role
+all__inception__src_dir: /path/to/source
+all__inception__images:
+  - name: mariadb
+    build_folder: app-folder
+  - name: wordpress
+    build_folder: db-folder
+  - name: nginx
+    build_folder: cache-folder

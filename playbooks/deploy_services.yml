@@ -1,23 +1,8 @@
 ---
-# Playbook to deploy Docker and services
-- name: Set up Docker and deploy containers on EC2
+# Playbook to deploy Inception
+- name: Deploy Inception
   hosts: all
-  become: true  # Ensure tasks are run with root privileges
-  gather_facts: true  # Gather system information
-  
-  tasks:
-  - name: Start Docker service
-    service:
-      name: docker
-      state: started
-      enabled: yes
+  become: true
 
-  - name: Copy docker-compose.yml to EC2
-    copy:
-      src: ../inception/srcs/docker-compose.yml
-      dest: /home/ubuntu/docker-compose.yml
-
-  - name: Deploy containers using Docker Compose
-    command: docker-compose -f /home/ubuntu/docker-compose.yml up -d
-    args:
-      chdir: /home/ubuntu
+  roles:
+    - role: inception

@@ -1,4 +1,5 @@
 ---
+# Main playbook to instance a EC2 in AWS, configure it and deploy inception
   - name: Instance EC2 in AWS
     import_playbook: ./playbooks/provision_ec2.yml
     tags: create
@@ -7,6 +8,6 @@
     import_playbook: ./playbooks/configure_ec2.yml
     tags: config
 
-  # - name: Run services in remote host
-  #   import_playbook: ./playbooks/deploy_services.yml
-  #   tags: deploy
+  - name: Run services in remote host
+    import_playbook: ./playbooks/deploy_services.yml
+    tags: deploy
