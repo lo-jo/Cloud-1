@@ -15,6 +15,10 @@
         dest: "{{ key_file_path }}"  # Path to save the private key
         mode: '0600'  # Ensure the key is saved with secure permissions
 
+    - name: Get public IP address
+      ansible.builtin.shell: "curl http://ip.me"
+      register: public_ip
+
     - name: Create security group # A security group acts as a virtual firewall that controls the traffic for one or more instances
       amazon.aws.ec2_security_group:
         name: "{{ sec_group }}"
@@ -25,7 +29,8 @@
         rules:
           - proto: tcp
             ports: 22
-            cidr_ip: 62.210.34.226/32 # Allow SSH access from my IP only
+            cidr_ip: "{{ public_ip.stdout }}/32"  # Allow SSH access from the public IP
+            # cidr_ip: 62.210.34.226/32 # Allow SSH access from my IP only
           - proto: tcp
             ports: 80
             cidr_ip: 0.0.0.0/0
@@ -80,3 +85,9 @@
         # var: ec2_instance
         msg: |
           EC2 instance details: [ID] {{ ec2_instance.instances[0].instance_id }} [PUBLIC IP ADDRESS] {{ ec2_instance.instances[0].public_ip_address }}
+
+    - name: Add EC2 instance host key to known_hosts
+      known_hosts:
+        name: "{{ ec2_instance.instances[0].public_ip_address }}"
+        key: "{{ lookup('pipe', 'ssh-keyscan -H ' ~ ec2_instance.instances[0].public_ip_address) }}"
+        path: "~/.ssh/known_hosts"
