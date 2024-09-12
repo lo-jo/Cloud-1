@@ -25,6 +25,12 @@
         rules:
           - proto: tcp
             ports: 22
+            cidr_ip: 62.210.34.226/32 # Allow SSH access from my IP only
+          - proto: tcp
+            ports: 80
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            ports: 443
             cidr_ip: 0.0.0.0/0
 
     - name: Provision an EC2 instance
@@ -42,6 +48,13 @@
         #   assign_public_ip: true
         count: 1
       register: ec2_instance
+
+    - name: Add new EC2 instance to in-memory inventory
+      add_host:
+        name: "{{ ec2_instance.instances[0].instance_id }}"
+        ansible_host: "{{ ec2_instance.instances[0].public_ip_address }}"
+        ansible_user: ubuntu
+        ansible_ssh_private_key_file: "{{ key_name }}"
 
     - name: Wait for SSH to become available
       wait_for:

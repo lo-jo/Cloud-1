@@ -1,2 +1,72 @@
 ---
-# tasks file for docker
+# Install Docker and Docker Compose, create necessary directories, and copy inception files to the remote host
+  - name: Update and install dependencies
+    apt:
+      update_cache: yes
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - make
+        - python3
+      state: present
+
+  - name: Add Docker GPG key
+    apt_key:
+      url: "{{ docker_apt_key_url }}"
+      state: present
+
+  - name: Add Docker APT repository
+    apt_repository:
+      repo: "{{ docker_apt_repo }}"
+      state: present
+
+  - name: Install Docker
+    apt:
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+      state: present
+
+  - name: Install Docker Compose
+    get_url:
+      url: "{{ docker_install_url }}"
+      dest: /usr/local/bin/docker-compose
+      mode: '0755'
+
+  - name: Create directory on remote host
+    file:
+      path: /home/ubuntu/cloud-1
+      state: directory
+      owner: ubuntu
+      group: ubuntu
+      recurse: yes
+
+  - name: Copy inception to remote host
+    copy:
+      src: inception/
+      dest: /home/ubuntu/cloud-1
+      owner: ubuntu
+      group: ubuntu
+      mode: '0755'
+
+  - name: Create necessary directories for volumes
+    file:
+      path: /home/ubuntu/data/{{ item }}
+      state: directory
+      mode: '0755'
+      owner: ubuntu
+      group: ubuntu
+    with_items:
+      - mariadb
+      - wordpress
+
+  - name: Create .env file on remote host from template
+    template:
+      src: .env.j2
+      dest: /home/ubuntu/cloud-1/srcs/.env
+      mode: '0600'
+      owner: ubuntu
+      group: ubuntu
