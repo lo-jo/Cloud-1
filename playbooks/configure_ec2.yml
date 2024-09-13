@@ -5,8 +5,8 @@
   become: true  # Ensure tasks are run with root privileges
   gather_facts: true  # Gather system information
 
-  vars_files:
-    - "../group_vars/all/env-inception.yml"  # Load environment variables
+  # vars_files:
+  #   - "../group_vars/all/env-inception.yml"  # Load environment variables
 
   roles:
     - role: docker

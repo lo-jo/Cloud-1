@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #   Check if the wordpress database is already created
-echo "=> Checking if \`$BDD_NAME\` database exists . . ."
+echo "=> Checking if '$BDD_NAME' database exists . . ."
 if [ ! -d "/var/lib/mysql/$BDD_NAME" ]; then
 
     #   Check if MariaDB is already running
@@ -13,7 +13,7 @@ if [ ! -d "/var/lib/mysql/$BDD_NAME" ]; then
         echo "=> MariaDB service is already running."
     fi
 
-    echo "=> creating \`$BDD_NAME\` database . . ."
+    echo "=> creating '$BDD_NAME' database . . ."
     # CREATE WORDPRESS DATABASE
     mysql -e "CREATE DATABASE IF NOT EXISTS $BDD_NAME;"
 
@@ -42,7 +42,7 @@ if [ ! -d "/var/lib/mysql/$BDD_NAME" ]; then
     fi
 
 else
-    echo "=> \`$BDD_NAME\` database exists!"
+    echo "=> '$BDD_NAME' database exists!"
 fi
 
 exec mysqld

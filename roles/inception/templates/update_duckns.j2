@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Environment variables for DuckDNS
+TOKEN="4e743485-8025-487e-bc2c-ca3d25c21ca1"
+DOMAIN="cloudieonesie.duckdns.org"
+
+# Fetch the public IP address of the instance
+IP={{ ansible_host }}
+
+# Update DuckDNS with the current IP address
+curl "https://www.duckdns.org/update?domains=${DOMAIN}&token=${TOKEN}&ip=${IP}"

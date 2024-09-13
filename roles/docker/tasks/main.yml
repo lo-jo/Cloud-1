@@ -35,38 +35,3 @@
       url: "{{ docker_install_url }}"
       dest: /usr/local/bin/docker-compose
       mode: '0755'
-
-  - name: Create directory on remote host
-    file:
-      path: /home/ubuntu/cloud-1
-      state: directory
-      owner: ubuntu
-      group: ubuntu
-      recurse: yes
-
-  - name: Copy inception to remote host
-    copy:
-      src: inception/
-      dest: /home/ubuntu/cloud-1
-      owner: ubuntu
-      group: ubuntu
-      mode: '0755'
-
-  - name: Create necessary directories for volumes
-    file:
-      path: /home/ubuntu/data/{{ item }}
-      state: directory
-      mode: '0755'
-      owner: ubuntu
-      group: ubuntu
-    with_items:
-      - mariadb
-      - wordpress
-
-  - name: Create .env file on remote host from template
-    template:
-      src: .env.j2
-      dest: /home/ubuntu/cloud-1/srcs/.env
-      mode: '0600'
-      owner: ubuntu
-      group: ubuntu

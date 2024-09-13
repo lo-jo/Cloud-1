@@ -16,7 +16,7 @@ RUN	openssl req \
         -newkey rsa:2048 \
         -keyout /etc/ssl/private/nginx-selfsigned.key \
         -out /etc/ssl/certs/nginx-selfsigned.crt \
-        -subj "/C=FR/ST=Ile-de-France/L=Paris/O=42/OU=42Paris/CN=mflores.42.fr"
+        -subj "/C=FR/ST=Ile-de-France/L=Paris/O=42/OU=42Paris/CN=${DOMAIN_NAME}"
 
 RUN	mkdir -p /var/www/html && chmod -R 755 /var/www/html
 

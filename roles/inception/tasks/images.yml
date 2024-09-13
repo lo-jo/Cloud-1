@@ -1,0 +1,8 @@
+# Build images of services
+  - name: Build Docker images
+    community.docker.docker_image_build:
+      name: "{{ image.name }}:latest"
+      path: "{{ inception_srcs }}/{{ image.build_folder }}"
+    loop: "{{ inception_images }}"
+    loop_control:
+      loop_var: image

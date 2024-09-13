@@ -1,10 +1,12 @@
 ---
 # Vars for inception role
-all__inception__src_dir: /path/to/source
-all__inception__images:
+inception_base_dir: /home/ubuntu/cloud-1/srcs
+inception_srcs: /home/ubuntu/cloud-1/srcs/requirements
+inception_data_dir: /home/ubuntu/data
+inception_images:
   - name: mariadb
-    build_folder: app-folder
+    build_folder: mariadb
   - name: wordpress
-    build_folder: db-folder
+    build_folder: wordpress
   - name: nginx
-    build_folder: cache-folder
+    build_folder: nginx

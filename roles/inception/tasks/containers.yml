@@ -1,0 +1,63 @@
+# Create containers
+  - name: Create mariadb container
+    community.docker.docker_container:
+      name: "mariadb"
+      image: "mariadb"
+      env_file: "{{ inception_base_dir }}/.env"
+      restart_policy: always
+      networks:
+        - name: "inception"
+      volumes:
+        - "mariadb:/var/lib/mysql"
+
+  # Wait for MariaDB to be healthy
+  - name: Wait for MariaDB container to be healthy
+    community.docker.docker_container_info:
+      name: mariadb
+    register: mariadb_info
+    until: mariadb_info.container.State.Health.Status == "healthy"
+    retries: 10
+    delay: 5
+    when: mariadb_info.container.State.Health is defined
+
+  - name: Create wordpress container
+    community.docker.docker_container:
+      name: "wordpress"
+      image: "wordpress"
+      env_file: "{{ inception_base_dir }}/.env"
+      restart_policy: always
+      networks:
+        - name: "inception"
+      volumes:
+        - "wordpress:/var/www/html"
+
+  # Wait for WordPress to be running
+  - name: Wait for WordPress container to be running
+    community.docker.docker_container_info:
+      name: wordpress
+    register: wordpress_info
+    until: wordpress_info.container.State.Status == "running"
+    retries: 10
+    delay: 5
+
+  - name: Create nginx container
+    community.docker.docker_container:
+      name: "nginx"
+      image: "nginx"
+      env_file: "{{ inception_base_dir }}/.env"
+      restart_policy: always
+      ports:
+        - 443:443
+      networks:
+        - name: "inception"
+      volumes:
+        - "wordpress:/var/www/html"
+
+  # - name: Add a container to a network, leaving existing containers connected
+  #   community.docker.docker_network:
+  #     name: inception
+  #     connected:
+  #       - nginx
+  #       - mariadb
+  #       - wordpress
+  #     appends: true

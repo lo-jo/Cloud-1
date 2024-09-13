@@ -1,18 +1,52 @@
 ---
 # Copy Inception files to remote host, build images, volumes, networks and deploy containers
-# - name: Copy Inception files to remote host
-#   ansible.builtin.copy:
-#     src: "inception/"
-#     dest: /home/ubuntu/cloud-1/
-#     mode: '0755'
-#     directory_mode: '0755'
-#     owner: ubuntu
-#     group: ubuntu
+  - name: Copy Inception files to remote host
+    ansible.builtin.copy:
+      src: "inception/"
+      dest: /home/ubuntu/cloud-1/
+      mode: '0755'
+      directory_mode: '0755'
+      owner: ubuntu
+      group: ubuntu
 
-- name: Run inception
-  ansible.builtin.include_tasks: "{{ item }}"
-  loop:
-    - "images.yaml"
-    - "volumes.yaml"
-    - "networks.yaml"
-    - "containers.yaml"
+  - name: Create necessary directories for volumes
+    file:
+      path: /home/ubuntu/data/{{ item }}
+      state: directory
+      mode: '0755'
+      owner: ubuntu
+      group: ubuntu
+    with_items:
+      - mariadb
+      - wordpress
+
+  - name: Create .env file on remote host from template
+    template:
+      src: .env.j2
+      dest: /home/ubuntu/cloud-1/srcs/.env
+      mode: '0600'
+      owner: ubuntu
+      group: ubuntu
+
+  # - name: Create update_duckdns.sh file on remote host from template
+  #   template:
+  #     src: update_duckns.j2
+  #     dest: /home/ubuntu/update_duckdns.sh
+  #     mode: '0755'
+  #     owner: ubuntu
+  #     group: ubuntu
+
+  # - name: Set up cron job for DuckDNS update
+  #   ansible.builtin.cron:
+  #     name: "Update DuckDNS IP address"
+  #     minute: "0"
+  #     hour: "*"
+  #     job: "/home/ubuntu/update_duckdns.sh"
+
+  - name: Run inception
+    ansible.builtin.include_tasks: "{{ item }}"
+    loop:
+      - "images.yml"
+      - "volumes.yml"
+      - "networks.yml"
+      - "containers.yml"

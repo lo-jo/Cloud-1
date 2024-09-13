@@ -1,0 +1,18 @@
+# Create the volumes for the containers
+  - name: Create wordpress volume
+    community.docker.docker_volume:
+      name: "wordpress"
+      driver: local
+      driver_options:
+        type: none
+        device: "{{ inception_data_dir }}/wordpress"
+        o: bind
+
+  - name: Create mariadb volume
+    community.docker.docker_volume:
+      name: "mariadb"
+      driver: local
+      driver_options:
+        type: none
+        device: "{{ inception_data_dir }}/mariadb"
+        o: bind
