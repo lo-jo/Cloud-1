@@ -71,7 +71,7 @@
 
     - name: Generate unique host entry
       set_fact:
-        host_entry: "server_{{ ec2_instance.instances[0].instance_id }} ansible_host={{ ec2_instance.instances[0].public_ip_address }} ansible_user=ubuntu ansible_ssh_private_key_file={{ key_name }}"
+        host_entry: "server_{{ ec2_instance.instances[0].instance_id }} ansible_host={{ ec2_instance.instances[0].public_ip_address }} ansible_user=ubuntu ansible_ssh_private_key_file={{ key_name }} instance_id={{ ec2_instance.instances[0].instance_id }}"
 
     - name: Ensure EC2 instance is in hosts.ini file
       lineinfile:
