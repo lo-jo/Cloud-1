@@ -2,6 +2,8 @@
 Deployment of a LEMP stack automated with Ansible and hosted on AWS.
 The goal is to automate the creation, configuration and deployment of a Wordpress site and the necessary docker infrastructure on an instance provided by a cloud provider.
 
+The project was done in collaboration with [@Chelo](https://github.com/mariav7).
+
 # Usage
 ``` ansible-playbook main.yaml ``` to create, configure and launch instance
 
