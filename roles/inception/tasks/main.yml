@@ -28,21 +28,6 @@
       owner: ubuntu
       group: ubuntu
 
-  # - name: Create update_duckdns.sh file on remote host from template
-  #   template:
-  #     src: update_duckns.j2
-  #     dest: /home/ubuntu/update_duckdns.sh
-  #     mode: '0755'
-  #     owner: ubuntu
-  #     group: ubuntu
-
-  # - name: Set up cron job for DuckDNS update
-  #   ansible.builtin.cron:
-  #     name: "Update DuckDNS IP address"
-  #     minute: "0"
-  #     hour: "*"
-  #     job: "/home/ubuntu/update_duckdns.sh"
-
   - name: Run inception
     ansible.builtin.include_tasks: "{{ item }}"
     loop:
