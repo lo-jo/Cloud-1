@@ -26,7 +26,7 @@ else
     # Check if the pip install succeeded
     if [[ $? -ne 0 ]]; then
         echo -e "${RED}Error: Failed to install Ansible.${RESET}"
-        exit 1
+        return 1
     fi
 fi
 

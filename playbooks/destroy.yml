@@ -1,0 +1,32 @@
+---
+- name: Delete EC2 instance
+  hosts: webservers
+  gather_facts: false
+  become: true
+  # vars:
+  #   ansible_python_interpreter: /usr/bin/python3
+
+  vars_files:
+    - "../group_vars/all/env.yml"
+  
+  tasks:
+    - name: Show EC2 instance ID
+      debug:
+        var: instance_id
+  
+    - name: Terminate EC2 instance
+      ec2_instance:
+        state: 'absent'
+        instance_ids: "{{ instance_id }}"
+        region: eu-west-3
+        aws_access_key: "{{ aws_creds.ec2_access_key }}"
+        aws_secret_key: "{{ aws_creds.ec2_secret_key }}"
+      register: termination_result
+
+    # - name: Show termination result
+    #   debug:
+    #     var: termination_result
+
+- name: Remove host entry from hosts.ini
+  import_playbook: remove_hosts.yaml
+

@@ -9,11 +9,17 @@
       no_log: true
       register: keypair_info
 
+    - name: Check if the private key file exists
+      stat:
+        path: "{{ key_file_path }}"
+      register: key_file_stat
+
     - name: Save the private key locally
       copy:
         content: "{{ keypair_info.key.private_key }}"  # The private key from AWS
         dest: "{{ key_file_path }}"  # Path to save the private key
         mode: '0600'  # Ensure the key is saved with secure permissions
+      when: not key_file_stat.stat.exists
 
     - name: Get public IP address
       ansible.builtin.shell: "curl http://ip.me"

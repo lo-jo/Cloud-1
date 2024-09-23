@@ -1,0 +1,11 @@
+---
+- name: Remove host entry from hosts.ini
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Remove all lines from hosts.ini
+      lineinfile:
+        path: ../inventory/hosts.ini
+        regexp: '.*'
+        state: absent

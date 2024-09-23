@@ -30,7 +30,8 @@ YAML: A popular and simple data format that is very clean and understandable by 
 pip install ansible
 export PATH=$PATH:~/.local/bin:$HOME/.local/bin
 ```
-
+Or use the custom script:
+``` . ./install_ansible.sh  ```
 ## Config
 hosts - It's an inventory file that contains pieces of information about managed servers by ansible. It allows you to create a group of servers that make you more easier to manage and scale the inventory file itself. The inventory file can be created with many different formats, including the INI and YAML formats.
 
