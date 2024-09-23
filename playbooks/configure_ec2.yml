@@ -1,0 +1,16 @@
+---
+# Playbook to configure EC2 instance by SSH into EC2 instance and set up Docker and containers
+- name: Set up Docker and copy inception files in EC2
+  hosts: all
+  become: true  # Ensure tasks are run with root privileges
+  gather_facts: true  # Gather system information
+
+  # vars_files:
+  #   - "../group_vars/all/env-inception.yml"  # Load environment variables
+
+  roles:
+    - role: docker
+      vars:
+        docker_apt_key_url: https://download.docker.com/linux/ubuntu/gpg
+        docker_apt_repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable
+        docker_install_url: "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}"

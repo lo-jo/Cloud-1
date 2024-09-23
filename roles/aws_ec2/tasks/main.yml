@@ -1,0 +1,99 @@
+---
+# Tasks handling all the provisioning, configuration, and setup of the EC2 instance
+    - name: Create SSH key pair
+      amazon.aws.ec2_key:
+        name: "{{ key_name }}"
+        region: "{{ region }}"
+        aws_access_key: "{{ aws_creds.ec2_access_key }}"
+        aws_secret_key: "{{ aws_creds.ec2_secret_key }}"
+      no_log: true
+      register: keypair_info
+
+    - name: Check if the private key file exists
+      stat:
+        path: "{{ key_file_path }}"
+      register: key_file_stat
+
+    - name: Save the private key locally
+      copy:
+        content: "{{ keypair_info.key.private_key }}"  # The private key from AWS
+        dest: "{{ key_file_path }}"  # Path to save the private key
+        mode: '0600'  # Ensure the key is saved with secure permissions
+      when: not key_file_stat.stat.exists
+
+    - name: Get public IP address
+      ansible.builtin.shell: "curl http://ip.me"
+      register: public_ip
+
+    - name: Create security group # A security group acts as a virtual firewall that controls the traffic for one or more instances
+      amazon.aws.ec2_security_group:
+        name: "{{ sec_group }}"
+        description: Security group for EC2 instance
+        region: "{{ region }}"
+        aws_access_key: "{{ aws_creds.ec2_access_key }}"
+        aws_secret_key: "{{ aws_creds.ec2_secret_key }}"
+        rules:
+          - proto: tcp
+            ports: 22
+            cidr_ip: "{{ public_ip.stdout }}/32"  # Allow SSH access from the public IP
+            # cidr_ip: 62.210.34.226/32 # Allow SSH access from my IP only
+          - proto: tcp
+            ports: 80
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            ports: 443
+            cidr_ip: 0.0.0.0/0
+
+    - name: Provision an EC2 instance
+      amazon.aws.ec2_instance:
+        name: "{{ ec2_name }}"
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        security_group: "{{ sec_group }}"
+        aws_access_key: "{{ aws_creds.ec2_access_key }}"
+        aws_secret_key: "{{ aws_creds.ec2_secret_key }}"
+        image_id: "{{ image }}"
+        wait: yes
+        region: "{{ region }}"
+        # network:
+        #   assign_public_ip: true
+        count: 1
+      register: ec2_instance
+
+    - name: Add new EC2 instance to in-memory inventory
+      add_host:
+        name: "{{ ec2_instance.instances[0].instance_id }}"
+        ansible_host: "{{ ec2_instance.instances[0].public_ip_address }}"
+        ansible_user: ubuntu
+        ansible_ssh_private_key_file: "{{ key_name }}"
+
+    - name: Wait for SSH to become available
+      wait_for:
+        host: "{{ ec2_instance.instances[0].public_ip_address }}"
+        port: 22
+        state: started
+        delay: 15
+        timeout: 300
+
+    - name: Generate unique host entry
+      set_fact:
+        host_entry: "server_{{ ec2_instance.instances[0].instance_id }} ansible_host={{ ec2_instance.instances[0].public_ip_address }} ansible_user=ubuntu ansible_ssh_private_key_file={{ key_name }} instance_id={{ ec2_instance.instances[0].instance_id }}"
+
+    - name: Ensure EC2 instance is in hosts.ini file
+      lineinfile:
+        path: "{{ hosts_ini_file }}"
+        regexp: '^server_{{ ec2_instance.instances[0].instance_id }} '  # Regex to match existing entry
+        line: "{{ host_entry }}"
+        create: yes  # Create the file if it does not exist
+
+    - name: Print EC2 instance details
+      debug:
+        # var: ec2_instance
+        msg: |
+          EC2 instance details: [ID] {{ ec2_instance.instances[0].instance_id }} [PUBLIC IP ADDRESS] {{ ec2_instance.instances[0].public_ip_address }}
+
+    - name: Add EC2 instance host key to known_hosts
+      known_hosts:
+        name: "{{ ec2_instance.instances[0].public_ip_address }}"
+        key: "{{ lookup('pipe', 'ssh-keyscan -H ' ~ ec2_instance.instances[0].public_ip_address) }}"
+        path: "~/.ssh/known_hosts"

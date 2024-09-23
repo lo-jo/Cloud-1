@@ -1,0 +1,14 @@
+# Set network to connect containers
+  - name: Set inception network
+    community.docker.docker_network:
+      name: "inception"
+      driver: bridge
+
+  # - name: Add a container to a network, leaving existing containers connected
+  #   community.docker.docker_network:
+  #     name: inception
+  #     connected:
+  #       - nginx
+  #       - mariadb
+  #       - wordpress
+  #     appends: true

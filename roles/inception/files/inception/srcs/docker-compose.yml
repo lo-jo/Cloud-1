@@ -1,0 +1,63 @@
+# Definition of the different services (images) to use 
+services:
+    nginx:
+        container_name: nginx # name of the container
+        build:          requirements/nginx/
+        image:          nginx
+        restart:        always # allows the container to restart in case of crash
+        networks:
+            - inception
+        ports:          # port in use
+            - "443:443"
+        volumes:
+            - wordpress:/var/www/html
+        depends_on:
+            - wordpress
+
+    mariadb:
+        container_name: mariadb
+        build:          requirements/mariadb/
+        image:          mariadb
+        restart:        always
+        env_file:       .env # defines the optional file containing the environment
+        networks:
+            - inception
+        volumes:
+            - mariadb:/var/lib/mysql
+
+    wordpress:
+        container_name: wordpress
+        build:          requirements/wordpress/
+        image:          wordpress
+        restart:        always
+        env_file:       .env
+        networks:
+            - inception
+        volumes:    # Path where our WordPress files are present
+            - wordpress:/var/www/html
+        depends_on:
+            - mariadb
+
+# NETWORK
+networks:
+    inception:
+        name:   inception
+        driver: bridge
+
+# VOLUMES
+volumes:
+  mariadb:
+    name: mariadb
+    driver: local
+    driver_opts:
+      device: /home/ubuntu/data/mariadb
+      type: none
+      o: bind   # Bind Mounts are volumes that mount on a host path, and they can be modified by other processes outside of Docker.
+
+  wordpress:
+    name: wordpress
+    driver: local
+    driver_opts:
+      device: /home/ubuntu/data/wordpress
+      type: none
+      o: bind
