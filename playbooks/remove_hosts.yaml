@@ -4,8 +4,9 @@
   gather_facts: false
 
   tasks:
-    - name: Remove all lines from hosts.ini
+    - name: Remove all host entries under [webservers] from hosts.ini
       lineinfile:
         path: ../inventory/hosts.ini
-        regexp: '.*'
+        regexp: '^server_.*'
         state: absent
+      when: "'[webservers]' in lookup('file', '../inventory/hosts.ini')"

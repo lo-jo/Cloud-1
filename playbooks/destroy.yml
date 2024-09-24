@@ -1,10 +1,7 @@
 ---
 - name: Delete EC2 instance
-  hosts: webservers
+  hosts: localhost
   gather_facts: false
-  become: true
-  # vars:
-  #   ansible_python_interpreter: /usr/bin/python3
 
   vars_files:
     - "../group_vars/all/env.yml"
@@ -13,15 +10,24 @@
     - name: Show EC2 instance ID
       debug:
         var: instance_id
-  
+
     - name: Terminate EC2 instance
-      ec2_instance:
+      amazon.aws.ec2_instance:  # Make sure to use amazon.aws collection's module
         state: 'absent'
-        instance_ids: "{{ instance_id }}"
+        name: cloud-1
         region: eu-west-3
         aws_access_key: "{{ aws_creds.ec2_access_key }}"
         aws_secret_key: "{{ aws_creds.ec2_secret_key }}"
       register: termination_result
+  
+    # - name: Terminate EC2 instance
+    #   ec2_instance:
+    #     state: 'absent'
+    #     instance_ids: "{{ instance_id }}"
+    #     region: eu-west-3
+    #     aws_access_key: "{{ aws_creds.ec2_access_key }}"
+    #     aws_secret_key: "{{ aws_creds.ec2_secret_key }}"
+    #   register: termination_result
 
     # - name: Show termination result
     #   debug:

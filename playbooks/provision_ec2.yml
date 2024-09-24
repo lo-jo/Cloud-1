@@ -11,6 +11,7 @@
   roles:
     - role: aws_ec2
       vars:
+        no_of_instances: 2
         ec2_name: cloud-1
         region: eu-west-3
         key_name: aws_cloud1_keypair  # Key name for SSH

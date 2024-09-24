@@ -8,6 +8,6 @@
     import_playbook: ./playbooks/configure_ec2.yml
     tags: config
 
-  - name: Run services in remote host
-    import_playbook: ./playbooks/deploy_services.yml
-    tags: deploy
+  # - name: Run services in remote host
+  #   import_playbook: ./playbooks/deploy_services.yml
+  #   tags: deploy

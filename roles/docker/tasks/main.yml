@@ -12,35 +12,35 @@
         - python3
       state: present
 
-  - name: Add Docker GPG key
-    apt_key:
-      url: "{{ docker_apt_key_url }}"
-      state: present
+  # - name: Add Docker GPG key
+  #   apt_key:
+  #     url: "{{ docker_apt_key_url }}"
+  #     state: present
 
-  - name: Add Docker APT repository
-    apt_repository:
-      repo: "{{ docker_apt_repo }}"
-      state: present
+  # - name: Add Docker APT repository
+  #   apt_repository:
+  #     repo: "{{ docker_apt_repo }}"
+  #     state: present
 
-  - name: Install Docker
-    apt:
-      name:
-        - docker-ce
-        - docker-ce-cli
-        - containerd.io
-      state: present
+  # - name: Install Docker
+  #   apt:
+  #     name:
+  #       - docker-ce
+  #       - docker-ce-cli
+  #       - containerd.io
+  #     state: present
 
-  - name: Install Docker Compose
-    get_url:
-      url: "{{ docker_install_url }}"
-      dest: /usr/local/bin/docker-compose
-      mode: '0755'
+  # - name: Install Docker Compose
+  #   get_url:
+  #     url: "{{ docker_install_url }}"
+  #     dest: /usr/local/bin/docker-compose
+  #     mode: '0755'
 
-  - name: Add Docker to the sudo group
-    user:
-      name: "{{ ansible_user }}"
-      groups: sudo
-      append: yes
+  # - name: Add Docker to the sudo group
+  #   user:
+  #     name: "{{ ansible_user }}"
+  #     groups: sudo
+  #     append: yes
 
   - name: Install python dependencies
     apt:
